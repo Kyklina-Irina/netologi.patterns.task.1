@@ -20,17 +20,20 @@ jobs:
           java-version: '11'
           distribution: 'temurin'
 
-      - name: Build with Maven
-        run: mvn -B compile test-compile
+      # Добавьте этот шаг для запуска приложения
+      - name: Start Application
+        run: |
+          java -jar artifacts/app-replan-delivery.jar > app.log 2>&1 & # Запускаем в фоне и перенаправляем логи
+          sleep 10 # Ждем 10 секунд, чтобы приложение точно запустилось
 
+      # Запускаем тесты (теперь приложение должно быть запущено)
       - name: Run tests
         run: mvn test
 
-    # Дополнительно: можно добавить шаг для запуска сервиса, если он нужен для тестов
-    # Например, если app-replan-delivery.jar должен быть запущен
-    # - name: Start application
-    #   run: java -jar artifacts/app-replan-delivery.jar &
-    #   # Подождать, пока сервер запустится
-    #   run: sleep 10
-    # - name: Run tests with server
-    #   run: mvn test
+      # (Опционально) Загрузка логов приложения в случае падения тестов для отладки
+      - name: Upload application logs if tests failed
+        uses: actions/upload-artifact@v4
+        if: failure() # Выполнить только если предыдущие шаги завершились с ошибкой
+        with:
+          name: application-logs
+          path: app.log
