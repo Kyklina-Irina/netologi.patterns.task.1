@@ -26,3 +26,11 @@ jobs:
       - name: Run tests
         run: mvn test
 
+    # Дополнительно: можно добавить шаг для запуска сервиса, если он нужен для тестов
+    # Например, если app-replan-delivery.jar должен быть запущен
+    # - name: Start application
+    #   run: java -jar artifacts/app-replan-delivery.jar &
+    #   # Подождать, пока сервер запустится
+    #   run: sleep 10
+    # - name: Run tests with server
+    #   run: mvn test
