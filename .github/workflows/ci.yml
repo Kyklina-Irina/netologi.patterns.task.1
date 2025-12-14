@@ -12,28 +12,23 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v3
 
       - name: Set up JDK 11
-        uses: actions/setup-java@v4
+        uses: actions/setup-java@v3
         with:
           java-version: '11'
           distribution: 'temurin'
 
-      # Добавьте этот шаг для запуска приложения
-      - name: Start Application
-        run: |
-          java -jar artifacts/app-replan-delivery.jar > app.log 2>&1 & # Запускаем в фоне и перенаправляем логи
-          sleep 10 # Ждем 10 секунд, чтобы приложение точно запустилось
+      - name: Build with Maven
+        run: mvn clean test
 
-      # Запускаем тесты (теперь приложение должно быть запущено)
-      - name: Run tests
-        run: mvn test
-
-      # (Опционально) Загрузка логов приложения в случае падения тестов для отладки
-      - name: Upload application logs if tests failed
-        uses: actions/upload-artifact@v4
-        if: failure() # Выполнить только если предыдущие шаги завершились с ошибкой
-        with:
-          name: application-logs
-          path: app.log
+    # Опционально: если нужно запускать сервис перед тестами
+    # - name: Start application
+    #   run: |
+    #     cd artifacts
+    #     java -jar app-replan-delivery.jar &
+    #     sleep 10 # Ждем, пока сервер запустится
+    #
+    # - name: Run tests
+    #   run: mvn test
